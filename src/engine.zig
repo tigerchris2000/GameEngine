@@ -1,5 +1,6 @@
 const std = @import("std");
 const geo = @import("geometry.zig");
+const input = @import("input.zig");
 const color = @import("color.zig");
 const alloc = std.heap.page_allocator;
 
