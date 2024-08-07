@@ -17,10 +17,5 @@ const name = "Game Engine";
 pub fn main() !void {
     try engine.initSDL(name, width, height);
     defer engine.deinitSDL();
-    try engine.prepareScene();
-    engine.presentScene();
-    c.SDL_Delay(3000);
-    var event: c.SDL_Event = undefined;
-    _ = c.SDL_PollEvent(&event);
-    _ = input.getKeyDown('a');
+    while (try engine.update()) {}
 }

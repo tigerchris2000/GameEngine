@@ -22,6 +22,13 @@ pub const app = struct {
     height: i32,
 };
 
+var startTime: u64 = undefined;
+var endTime: u64 = undefined;
+var deltaTime: u64 = undefined;
+
+var xpos: f32 = 0;
+var ypos: f32 = 0;
+
 var App = app{ .window = null, .renderer = null, .width = undefined, .height = undefined };
 
 pub fn initSDL(name: []const u8, width: i32, height: i32) !void {
@@ -45,6 +52,13 @@ pub fn initSDL(name: []const u8, width: i32, height: i32) !void {
 
     App.width = width;
     App.height = height;
+    xpos = @as(f32, @floatFromInt(width)) / @as(f32, @floatFromInt(2));
+    ypos = @as(f32, @floatFromInt(height)) / @as(f32, @floatFromInt(2));
+    //var dm: c.SDL_DisplayMode = undefined;
+    //_ = c.SDL_GetDesktopDisplayMode(0, &dm);
+    //std.debug.print("w:{}, h:{}\n", .{ dm.w, dm.h });
+    //c.SDL_SetWindowPosition(App.window, @divFloor(dm.w, @as(c_int, 4)), @divFloor(dm.h, @as(c_int, 3)));
+    c.SDL_SetWindowPosition(App.window, (1920 / 2) - @divFloor(width, 2), (1080 / 2) - @divFloor(height, 2));
 }
 
 pub fn deinitSDL() void {
@@ -54,7 +68,7 @@ pub fn deinitSDL() void {
     c.SDL_Quit();
 }
 
-pub fn prepareScene() !void {
+fn prepareScene() !void {
     if (c.SDL_RenderClear(App.renderer) == -1) {
         std.debug.print("Can't clear render\n", .{});
         std.debug.print("{s}\n", .{c.SDL_GetError()});
@@ -67,17 +81,38 @@ pub fn prepareScene() !void {
         std.debug.print("{s}\n", .{c.SDL_GetError()});
         return SDL_Error.render;
     }
-    for (0..10) |i| {
-        try geo.createTriangle(alloc, color.RED, .{
-            .{ .x = @floatFromInt(i * 10), .y = 0 },
-            .{ .x = @floatFromInt((i + 1) * 10), .y = @floatFromInt(App.height) },
-            .{ .x = @floatFromInt(i * 10), .y = @floatFromInt(App.height) },
-        });
+    if (input.getKey(input.keycode.KEYCODE_W)) {
+        ypos -= 1;
     }
-    try geo.createRect(alloc, color.BLUE, .{ .x = 200, .y = 200 }, 30, 50);
+    if (input.getKey(input.keycode.KEYCODE_S)) {
+        ypos += 1;
+    }
+    if (input.getKey(input.keycode.KEYCODE_D)) {
+        xpos += 1;
+    }
+    if (input.getKey(input.keycode.KEYCODE_A)) {
+        xpos -= 1;
+    }
+    try geo.createRect(alloc, color.BLUE, .{ .x = xpos, .y = ypos }, 30, 50);
     try geo.render(App);
 }
 
-pub fn presentScene() void {
+fn presentScene() void {
     c.SDL_RenderPresent(App.renderer);
+}
+
+pub fn update() !bool {
+    startTime = c.SDL_GetTicks64();
+    var event: c.SDL_Event = undefined;
+    while (c.SDL_PollEvent(&event) > 0) {
+        if (event.type == c.SDL_QUIT) {
+            return false;
+        }
+    }
+    try prepareScene();
+    presentScene();
+    endTime = c.SDL_GetTicks64();
+    deltaTime = endTime - startTime;
+    c.SDL_Delay(@intCast(deltaTime));
+    return true;
 }
