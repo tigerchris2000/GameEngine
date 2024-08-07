@@ -6,6 +6,13 @@ This is for my own use do not blame me if something breaks on your devices
 - get keys and print them only on down
 - get keys and print them only on up
 ## Video
-- emtpy window
+- draw rect via center
 ## Audio
 - TBD
+
+# DONE
+## Input
+## Video
+- create empty window
+- draw rectangles
+## Audio
