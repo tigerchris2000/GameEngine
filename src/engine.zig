@@ -12,6 +12,7 @@ const c = @cImport({
 
 pub const SDL_Error = error{
     initialize,
+    input,
     render,
 };
 
@@ -81,17 +82,17 @@ fn prepareScene() !void {
         std.debug.print("{s}\n", .{c.SDL_GetError()});
         return SDL_Error.render;
     }
-    if (input.getKey(input.keycode.KEYCODE_W)) {
-        ypos -= 1;
+    if (input.getKeyUp(input.keycode.KEYCODE_W)) {
+        ypos -= 100;
     }
-    if (input.getKey(input.keycode.KEYCODE_S)) {
-        ypos += 1;
+    if (input.getKeyUp(input.keycode.KEYCODE_S)) {
+        ypos += 100;
     }
-    if (input.getKey(input.keycode.KEYCODE_D)) {
-        xpos += 1;
+    if (input.getKeyUp(input.keycode.KEYCODE_D)) {
+        xpos += 100;
     }
-    if (input.getKey(input.keycode.KEYCODE_A)) {
-        xpos -= 1;
+    if (input.getKeyUp(input.keycode.KEYCODE_A)) {
+        xpos -= 109;
     }
     try geo.createRect(alloc, color.BLUE, .{ .x = xpos, .y = ypos }, 30, 50);
     try geo.render(App);
@@ -104,6 +105,7 @@ fn presentScene() void {
 pub fn update() !bool {
     startTime = c.SDL_GetTicks64();
     var event: c.SDL_Event = undefined;
+    try input.savePrev();
     while (c.SDL_PollEvent(&event) > 0) {
         if (event.type == c.SDL_QUIT) {
             return false;

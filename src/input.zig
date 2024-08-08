@@ -1,4 +1,6 @@
 const std = @import("std");
+const engine = @import("engine.zig");
+
 const c = @cImport({
     @cInclude("SDL.h");
     @cInclude("SDL_render.h");
@@ -41,12 +43,22 @@ pub const keycode = enum {
     pub const KEYCODE_DOWN = c.SDL_SCANCODE_DOWN;
 };
 
+var prevKeys: [512]c_int = undefined;
+
+pub fn savePrev() !void {
+    var size: c_int = undefined;
+    const keys = c.SDL_GetKeyboardState(&size);
+    if (size != @as(c_int, @intCast(prevKeys.len))) {
+        return engine.SDL_Error.input;
+    }
+    for (prevKeys, 0..) |_, i| {
+        prevKeys[i] = keys[i];
+    }
+}
+
 pub fn getKeyDown(key: c_int) bool {
     const keys = c.SDL_GetKeyboardState(null);
-    if (keys[@intCast(key)] > 0) {
-        std.debug.print("pressed\n", .{});
-    }
-    return false;
+    return keys[@intCast(key)] > 0 and prevKeys[@intCast(key)] == 0;
 }
 
 pub fn getKey(key: c_int) bool {
@@ -55,6 +67,6 @@ pub fn getKey(key: c_int) bool {
 }
 
 pub fn getKeyUp(key: c_int) bool {
-    _ = key;
-    return false;
+    const keys = c.SDL_GetKeyboardState(null);
+    return keys[@intCast(key)] == 0 and prevKeys[@intCast(key)] > 0;
 }
