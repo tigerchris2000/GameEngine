@@ -17,8 +17,6 @@ pub fn build(b: *std.Build) void {
 
     const lib = b.addStaticLibrary(.{
         .name = "GameEngine",
-        // In this case the main source file is merely a path, however, in more
-        // complicated build scripts, this could be a generated file.
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
@@ -38,20 +36,20 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    exe.linkSystemLibrary("SDL2");
-    exe.linkLibC();
-    //   if (target.isNativeOs() and target.getOsTag() == .linux) {
-    //       // The SDL package doesn't work for Linux yet, so we rely on system
-    //       // packages for now.
-    //       exe.linkSystemLibrary("SDL2");
-    //       exe.linkLibC();
-    //   } else {
-    //       const sdl_dep = b.dependency("sdl", .{
-    //           .optimize = .ReleaseFast,
-    //           .target = target,
-    //       });
-    //       exe.linkLibrary(sdl_dep.artifact("SDL2"));
-    //   }
+    if (target.query.isNativeOs() and target.result.os.tag == .linux) {
+        // The SDL package doesn't work for Linux yet, so we rely on system
+        // packages for now.
+        std.debug.print("Called\n", .{});
+        exe.linkSystemLibrary("SDL2");
+        exe.linkLibC();
+    } else {
+        std.debug.print("Called2\n", .{});
+        const sdl_dep = b.dependency("sdl", .{
+            .optimize = .ReleaseFast,
+            .target = target,
+        });
+        exe.linkLibrary(sdl_dep.artifact("SDL2"));
+    }
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default

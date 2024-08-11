@@ -2,18 +2,29 @@ const std = @import("std");
 const geo = @import("geometry.zig");
 const input = @import("input.zig");
 const color = @import("color.zig");
+const renderer = @import("renderer.zig");
 const alloc = std.heap.page_allocator;
 
 const c = @cImport({
-    @cInclude("SDL.h");
-    @cInclude("SDL_render.h");
-    @cInclude("stdio.h");
+    @cInclude("SDL2/SDL.h");
+    @cInclude("SDL2/SDL_render.h");
 });
 
 pub const SDL_Error = error{
     initialize,
     input,
     render,
+};
+
+pub const transform = struct {
+    position: geo.vec2,
+    rotaton: f32,
+};
+
+pub const gameobject = struct {
+    Transform: *transform,
+    Sprite: ?*renderer.sprite,
+    GeometricSprite: ?*renderer.geometricSprite,
 };
 
 pub const app = struct {

@@ -1,12 +1,10 @@
 const c = @cImport({
-    @cInclude("SDL.h");
-    @cInclude("SDL_render.h");
-    @cInclude("stdio.h");
+    @cInclude("SDL2/SDL.h");
+    @cInclude("SDL2/SDL_render.h");
 });
 
 const std = @import("std");
 const geo = @import("geometry.zig");
-const colors = @import("color.zig");
 const engine = @import("engine.zig");
 const input = @import("input.zig");
 

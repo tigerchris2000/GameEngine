@@ -1,9 +1,10 @@
 This will be a gameengine using SDL in zig.  
 This is for my own use do not blame me if something breaks on your systems  
+Now compilable for linux and windows
 # TODO
 ## Engine
-- Collisons
 - Gameobjects
+- Collisons
 ## Input
 ## Video
 - render image

@@ -2,9 +2,8 @@ const std = @import("std");
 const engine = @import("engine.zig");
 
 const c = @cImport({
-    @cInclude("SDL.h");
-    @cInclude("SDL_render.h");
-    @cInclude("stdio.h");
+    @cInclude("SDL2/SDL.h");
+    @cInclude("SDL2/SDL_render.h");
 });
 
 pub const keycode = enum {
