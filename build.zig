@@ -35,7 +35,6 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-
     if (target.query.isNativeOs() and target.result.os.tag == .linux) {
         // The SDL package doesn't work for Linux yet, so we rely on system
         // packages for now.
@@ -44,6 +43,7 @@ pub fn build(b: *std.Build) void {
         exe.linkLibC();
     } else {
         std.debug.print("Called2\n", .{});
+
         const sdl_dep = b.dependency("sdl", .{
             .optimize = .ReleaseFast,
             .target = target,
